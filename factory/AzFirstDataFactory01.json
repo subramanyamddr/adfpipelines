@@ -1,0 +1,9 @@
+{
+	"name": "AzFirstDataFactory01",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b9bf29c7-906f-4803-9309-79fd13f5622f",
+		"tenantId": "a3d3d0f0-6b19-40dc-a740-67ee247d38f0"
+	}
+}
