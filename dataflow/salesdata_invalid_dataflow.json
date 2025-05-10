@@ -1,0 +1,74 @@
+{
+	"name": "salesdata_invalid_dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "salesData_invalid",
+						"type": "DatasetReference"
+					},
+					"name": "excelsource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "firstdestination",
+						"type": "DatasetReference"
+					},
+					"name": "validDataSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "firstdestination",
+						"type": "DatasetReference"
+					},
+					"name": "InvalidDataSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Sno as string,",
+				"          Region as string,",
+				"          Country as string,",
+				"          {Item Type} as string,",
+				"          {Sales Channel} as string,",
+				"          {Order Priority} as string,",
+				"          {Order Date} as string,",
+				"          {Order ID} as string,",
+				"          {Ship Date} as string,",
+				"          {Units Sold} as string,",
+				"          {Unit Price} as string,",
+				"          {Unit Cost} as string,",
+				"          {Total Revenue} as string,",
+				"          {Total Cost} as string,",
+				"          {Total Profit} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> excelsource",
+				"excelsource split(isInteger(Sno),",
+				"     disjoint: false) ~> split1@(validOutput, invalidOutput)",
+				"split1@validOutput sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['validDataSink.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> validDataSink",
+				"split1@invalidOutput sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['InvalidDataSink.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> InvalidDataSink"
+			]
+		}
+	}
+}
