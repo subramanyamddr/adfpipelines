@@ -107,11 +107,11 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "Set variable1",
+										"name": "Set latest modified date",
 										"type": "SetVariable",
 										"dependsOn": [
 											{
-												"activity": "Set variable2",
+												"activity": "set file name",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -131,7 +131,7 @@
 										}
 									},
 									{
-										"name": "Set variable2",
+										"name": "set file name",
 										"type": "SetVariable",
 										"dependsOn": [],
 										"policy": {
