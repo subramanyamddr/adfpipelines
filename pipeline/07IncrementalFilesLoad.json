@@ -33,7 +33,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "get dst latest file date",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -46,13 +46,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
+						"value": "@activity('get dst latest date').output.childItems",
 						"type": "Expression"
 					},
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Get Metadata1",
+							"name": "Get latest modified date for file",
 							"type": "GetMetadata",
 							"dependsOn": [],
 							"policy": {
@@ -87,6 +87,68 @@
 									"type": "DelimitedTextReadSettings"
 								}
 							}
+						},
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Get latest modified date for file",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@greater(activity('Get latest modified date for file').output.lastModified,variables('dstlatestdate'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Set variable1",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Set variable2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "dstlatestdate",
+											"value": {
+												"value": "@activity('Get latest modified date for file').output.lastModified",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Set variable2",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "dstlatestfileName",
+											"value": {
+												"value": "@activity('Get latest modified date for file').output.itemName",
+												"type": "Expression"
+											}
+										}
+									}
+								]
+							}
 						}
 					]
 				}
@@ -95,11 +157,15 @@
 		"variables": {
 			"sourcelatestdate": {
 				"type": "String",
-				"defaultValue": "'1900-01-01'"
+				"defaultValue": "'1900-01-01T00:00:00Z'"
 			},
 			"dstlatestdate": {
 				"type": "String",
-				"defaultValue": "'1900-01-01'"
+				"defaultValue": "'1900-01-01T00:00:00Z'"
+			},
+			"dstlatestfileName": {
+				"type": "String",
+				"defaultValue": "test"
 			}
 		},
 		"annotations": []
