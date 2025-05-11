@@ -1,5 +1,5 @@
 {
-	"name": "delete old files only with delete activity",
+	"name": "06delete old files only with delete activity",
 	"properties": {
 		"activities": [
 			{
