@@ -1,0 +1,31 @@
+{
+	"name": "srcFileWithFileName",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "firststorageblob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"srcFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().srcFileName",
+					"type": "Expression"
+				},
+				"container": "source"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
