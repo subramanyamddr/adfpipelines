@@ -13,6 +13,71 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/fixedwithdataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "fixedwidthsource",
+								"type": "DatasetReference"
+							},
+							"name": "fixedwidthsource"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "firstdestination",
+								"type": "DatasetReference"
+							},
+							"name": "fixedWidthSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivefixedColumnsWithSubstring"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {CustId CustumerName        CustumerCity   CustomerPhone Subscription} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> fixedwidthsource",
+						"fixedwidthsource derive(customerId = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 1,7),",
+						"          CustumerName = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 8,20),",
+						"          customerCity = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 28,15),",
+						"          CustomerPhone = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 43,14),",
+						"          Subscription = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 57,4)) ~> derivefixedColumnsWithSubstring",
+						"derivefixedColumnsWithSubstring select(mapColumn(",
+						"          customerId,",
+						"          CustumerName,",
+						"          customerCity,",
+						"          CustomerPhone,",
+						"          Subscription",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['fixedWidthOutput.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> fixedWidthSink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DeleteDuplicateRowsDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -61,6 +126,60 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/runningTotalDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "csvFileNameRunningTotal",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "firstdestination",
+								"type": "DatasetReference"
+							},
+							"name": "runningTotal"
+						}
+					],
+					"transformations": [
+						{
+							"name": "window1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          dimid as integer,",
+						"          name as string,",
+						"          age as integer,",
+						"          country as string,",
+						"          team as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 window(asc(dimid, true),",
+						"     RunningTotal = sum(age)) ~> window1",
+						"window1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['RunningTotal_Output.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> runningTotal"
 					]
 				}
 			},
@@ -153,7 +272,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/fixedwithdataflow')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/09DeleteDuplicateRowsDataFlowExec')]",
@@ -199,6 +320,52 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/DeleteDuplicateRowsDataFlow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/10RunningTotalPipelineDFExecute')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runningTotalDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"runningTotal": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/runningTotalDataFlow')]"
 			]
 		}
 	]
