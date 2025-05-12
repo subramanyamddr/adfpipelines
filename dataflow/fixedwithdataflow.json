@@ -1,0 +1,48 @@
+{
+	"name": "fixedwithdataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "fixedwidthsource",
+						"type": "DatasetReference"
+					},
+					"name": "fixedwidthsource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "firstdestination",
+						"type": "DatasetReference"
+					},
+					"name": "fixedWidthSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivefixedColumnsWithSubstring"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {CustId CustumerName        CustumerCity   CustomerPhone Subscription} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> fixedwidthsource",
+				"fixedwidthsource derive(customerId = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 1,7),",
+				"          CustumerName = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 8,20),",
+				"          customerCity = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 28,15),",
+				"          CustomerPhone = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 43,14),",
+				"          Subscription = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 57,4)) ~> derivefixedColumnsWithSubstring",
+				"derivefixedColumnsWithSubstring sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> fixedWidthSink"
+			]
+		}
+	}
+}
