@@ -24,6 +24,9 @@
 			"transformations": [
 				{
 					"name": "derivefixedColumnsWithSubstring"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -38,10 +41,21 @@
 				"          customerCity = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 28,15),",
 				"          CustomerPhone = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 43,14),",
 				"          Subscription = substring({CustId CustumerName        CustumerCity   CustomerPhone Subscription}, 57,4)) ~> derivefixedColumnsWithSubstring",
-				"derivefixedColumnsWithSubstring sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"derivefixedColumnsWithSubstring select(mapColumn(",
+				"          customerId,",
+				"          CustumerName,",
+				"          customerCity,",
+				"          CustomerPhone,",
+				"          Subscription",
+				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> fixedWidthSink"
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['fixedWidthOutput.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> fixedWidthSink"
 			]
 		}
 	}
