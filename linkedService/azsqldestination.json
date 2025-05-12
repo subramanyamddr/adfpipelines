@@ -1,0 +1,14 @@
+{
+	"name": "azsqldestination",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "azfirstsqlserver.database.windows.net",
+			"database": "AzFirstSqlDatabase",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SystemAssignedManagedIdentity"
+		}
+	}
+}
