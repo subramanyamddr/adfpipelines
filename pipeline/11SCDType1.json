@@ -62,7 +62,7 @@
 				}
 			},
 			{
-				"name": "Data flow1",
+				"name": "SCD_Type1_Load",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
