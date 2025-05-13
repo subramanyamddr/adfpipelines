@@ -95,13 +95,13 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          {Emp ID} = srcEmpID,",
-				"          {Name Prefix} = srcNamePrefix,",
-				"          {First Name} = srcFirstName,",
-				"          {Middle Initial} = srcMiddleInitial,",
-				"          {Last Name} = srcLastName,",
-				"          Gender = srcEmployeeInputFile@Gender,",
-				"          {E Mail} = srcEMail",
+				"          srcEmpID = EmpID,",
+				"          srcNamePrefix = NamePrefix,",
+				"          srcFirstName = FirstName,",
+				"          srcMiddleInitial = MiddleInitial,",
+				"          srcLastName = LastName,",
+				"          srcGender = Gender,",
+				"          srcEMail = EMail",
 				"     )) ~> sink1"
 			]
 		}
