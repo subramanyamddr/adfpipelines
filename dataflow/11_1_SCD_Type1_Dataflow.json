@@ -1,0 +1,53 @@
+{
+	"name": "11_1_SCD_Type1_Dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcInputEmployeeFile",
+						"type": "DatasetReference"
+					},
+					"name": "srcEmployeeInputFile"
+				},
+				{
+					"dataset": {
+						"referenceName": "sqlTblDestination",
+						"type": "DatasetReference"
+					},
+					"name": "lkpEmployeeTable"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          {Emp ID} as string,",
+				"          {Name Prefix} as string,",
+				"          {First Name} as string,",
+				"          {Middle Initial} as string,",
+				"          {Last Name} as string,",
+				"          Gender as string,",
+				"          {E Mail} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcEmployeeInputFile",
+				"source(output(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> lkpEmployeeTable"
+			]
+		}
+	}
+}

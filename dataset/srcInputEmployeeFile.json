@@ -1,0 +1,52 @@
+{
+	"name": "srcInputEmployeeFile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "firststorageblob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "SimpleEmployeeData.txt",
+				"container": "source"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Emp ID",
+				"type": "String"
+			},
+			{
+				"name": "Name Prefix",
+				"type": "String"
+			},
+			{
+				"name": "First Name",
+				"type": "String"
+			},
+			{
+				"name": "Middle Initial",
+				"type": "String"
+			},
+			{
+				"name": "Last Name",
+				"type": "String"
+			},
+			{
+				"name": "Gender",
+				"type": "String"
+			},
+			{
+				"name": "E Mail",
+				"type": "String"
+			}
+		]
+	}
+}
