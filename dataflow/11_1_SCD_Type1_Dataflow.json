@@ -19,11 +19,26 @@
 					"name": "lkpEmployeeTable"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqldstTableCheck",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          {Emp ID} as string,",
+				"          {Emp ID} as integer,",
 				"          {Name Prefix} as string,",
 				"          {First Name} as string,",
 				"          {Middle Initial} as string,",
@@ -46,7 +61,25 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> lkpEmployeeTable"
+				"     format: 'table') ~> lkpEmployeeTable",
+				"srcEmployeeInputFile, lkpEmployeeTable join({Emp ID} == EmpID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 alterRow(insertIf(isNull(EmpID)),",
+				"     updateIf(!isNull(EmpID))) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['Emp ID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
