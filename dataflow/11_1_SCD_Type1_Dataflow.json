@@ -71,7 +71,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 alterRow(insertIf(isNull(EmpID)),",
-				"     updateIf(!isNull(EmpID))) ~> alterRow1",
+				"     updateIf(!isNull(EmpID) && !isNull(srcEmpID))) ~> alterRow1",
 				"srcEmployeeInputFile select(mapColumn(",
 				"          srcEmpID = {Emp ID},",
 				"          srcNamePrefix = {Name Prefix},",
@@ -101,14 +101,7 @@
 				"          {Middle Initial} = srcMiddleInitial,",
 				"          {Last Name} = srcLastName,",
 				"          Gender = srcEmployeeInputFile@Gender,",
-				"          {E Mail} = srcEMail,",
-				"          EmpID,",
-				"          NamePrefix,",
-				"          FirstName,",
-				"          MiddleInitial,",
-				"          LastName,",
-				"          Gender = lkpEmployeeTable@Gender,",
-				"          EMail",
+				"          {E Mail} = srcEMail",
 				"     )) ~> sink1"
 			]
 		}
