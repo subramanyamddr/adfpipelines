@@ -1,5 +1,5 @@
 {
-	"name": "110scdcopy",
+	"name": "011scdcopy",
 	"properties": {
 		"activities": [
 			{
@@ -28,8 +28,10 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "drop table if exists dbo.SimpleEmployeeData\n\ncreate table dbo.SimpleEmployeeData\n(\nEmpID int primary key\n,NamePrefix varchar(100)\n,FirstName varchar(100)\n,MiddleInitial varchar(100)\n,LastName  varchar(100)\n,Gender varchar(100)\n,EMail varchar(100)\n)",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
