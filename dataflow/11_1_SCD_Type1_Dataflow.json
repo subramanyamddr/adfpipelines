@@ -37,6 +37,9 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -70,7 +73,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 alterRow(insertIf(isNull(EmpID)),",
+				"select2 alterRow(insertIf(isNull(EmpID)),",
 				"     updateIf(!isNull(EmpID)&&!isNull(srcEmpID))) ~> alterRow1",
 				"srcEmployeeInputFile select(mapColumn(",
 				"          srcEmpID = {Emp ID},",
@@ -83,6 +86,24 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join1 select(mapColumn(",
+				"          srcEmpID,",
+				"          srcNamePrefix,",
+				"          srcFirstName,",
+				"          srcMiddleInitial,",
+				"          srcLastName,",
+				"          srcGender,",
+				"          srcEMail,",
+				"          EmpID,",
+				"          NamePrefix,",
+				"          FirstName,",
+				"          MiddleInitial,",
+				"          LastName,",
+				"          Gender,",
+				"          EMail",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
