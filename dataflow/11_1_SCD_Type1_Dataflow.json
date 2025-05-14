@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "AzureSqldstTableCheck",
+						"referenceName": "azIncrementalLoadDestination",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -69,25 +69,34 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 alterRow(insertIf(isNull(EmpID)),",
 				"     updateIf(!isNull(EmpID))) ~> alterRow1",
-				"alterRow1 sink(allowSchemaDrift: true,",
+				"alterRow1 sink(allowSchemaDrift: false,",
 				"     validateSchema: false,",
+				"     input(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string",
+				"     ),",
 				"     deletable:false,",
-				"     insertable:false,",
+				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['srcEmpID'],",
+				"     keys:['EmpID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          srcEmpID = EmpID,",
-				"          srcNamePrefix = NamePrefix,",
-				"          srcFirstName = FirstName,",
-				"          srcMiddleInitial = MiddleInitial,",
-				"          srcLastName = LastName,",
-				"          srcGender = Gender,",
-				"          srcEMail = EMail",
+				"          EmpID,",
+				"          NamePrefix,",
+				"          FirstName,",
+				"          MiddleInitial,",
+				"          LastName,",
+				"          Gender = lkpEmployeeTable@Gender,",
+				"          EMail",
 				"     )) ~> sink1"
 			]
 		}
