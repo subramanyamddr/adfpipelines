@@ -5,6 +5,8 @@
 			{
 				"name": "verify if dst table exists or not",
 				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -27,6 +29,8 @@
 			{
 				"name": "If condtion check dst table",
 				"type": "IfCondition",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "verify if dst table exists or not",
