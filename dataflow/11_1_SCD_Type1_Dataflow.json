@@ -34,6 +34,9 @@
 				},
 				{
 					"name": "alterRow1"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -69,7 +72,18 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 alterRow(insertIf(isNull(EmpID)),",
 				"     updateIf(!isNull(EmpID))) ~> alterRow1",
-				"alterRow1 sink(allowSchemaDrift: false,",
+				"alterRow1 select(mapColumn(",
+				"          {Emp ID},",
+				"          {Name Prefix},",
+				"          {First Name},",
+				"          {Middle Initial},",
+				"          {Last Name},",
+				"          Gender = srcEmployeeInputFile@Gender,",
+				"          {E Mail}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          EmpID as integer,",
@@ -81,22 +95,22 @@
 				"          EMail as string",
 				"     ),",
 				"     deletable:false,",
-				"     insertable:true,",
+				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['EmpID'],",
+				"     keys:['Emp ID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          EmpID,",
-				"          NamePrefix,",
-				"          FirstName,",
-				"          MiddleInitial,",
-				"          LastName,",
-				"          Gender = lkpEmployeeTable@Gender,",
-				"          EMail",
+				"          EmpID = {Emp ID},",
+				"          NamePrefix = {Name Prefix},",
+				"          FirstName = {First Name},",
+				"          MiddleInitial = {Middle Initial},",
+				"          LastName = {Last Name},",
+				"          Gender,",
+				"          EMail = {E Mail}",
 				"     )) ~> sink1"
 			]
 		}
