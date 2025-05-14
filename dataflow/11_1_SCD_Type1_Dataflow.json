@@ -98,7 +98,7 @@
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['Emp ID'],",
+				"     keys:['EmpID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
