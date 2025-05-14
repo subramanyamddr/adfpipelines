@@ -96,7 +96,7 @@
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
-				"     updateable:false,",
+				"     updateable:true,",
 				"     upsertable:true,",
 				"     keys:['EmpID'],",
 				"     format: 'table',",
