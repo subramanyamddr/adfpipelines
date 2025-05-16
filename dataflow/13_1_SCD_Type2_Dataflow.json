@@ -47,6 +47,9 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -84,8 +87,9 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 split(!isNull(EmpID),",
 				"     disjoint: false) ~> split1@(Update, New)",
-				"split1@Update derive(InActiveFlag = 0) ~> derivedColumn1",
+				"alterRow1 derive(InActiveFlag = 0) ~> derivedColumn1",
 				"split1@New derive(ActiveFlag = 1) ~> derivedColumn2",
+				"split1@Update alterRow(upsertIf(1==1)) ~> alterRow1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -99,9 +103,10 @@
 				"          Active as integer",
 				"     ),",
 				"     deletable:false,",
-				"     insertable:true,",
+				"     insertable:false,",
 				"     updateable:false,",
-				"     upsertable:false,",
+				"     upsertable:true,",
+				"     keys:['EmpID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
