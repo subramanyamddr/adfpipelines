@@ -24,6 +24,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -50,7 +51,7 @@
 				"typeProperties": {
 					"variableName": "filesCount",
 					"value": {
-						"value": "@length(activity('Get Metadata1').output.childItems)",
+						"value": "@length(activity('Get all files from blob').output.childItems)",
 						"type": "Expression"
 					}
 				}
