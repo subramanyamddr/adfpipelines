@@ -19,13 +19,34 @@
 					"name": "lkpEmployeeTable"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "scd2_type1_sql_db",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "scd2_type1_sql_db",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
 				},
 				{
+					"name": "split1"
+				},
+				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -61,8 +82,70 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 derive(New = {Emp ID}!=EmpID,",
-				"          update = {Emp ID}==EmpID) ~> derivedColumn1"
+				"join1 split(!isNull(EmpID),",
+				"     disjoint: false) ~> split1@(Update, New)",
+				"split1@Update derive(InActiveFlag = 0) ~> derivedColumn1",
+				"split1@New derive(ActiveFlag = 1) ~> derivedColumn2",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string,",
+				"          Active as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          EmpID = {Emp ID},",
+				"          NamePrefix = {Name Prefix},",
+				"          FirstName = {First Name},",
+				"          MiddleInitial = {Middle Initial},",
+				"          LastName,",
+				"          Gender = split1@Update@Gender,",
+				"          EMail = {E Mail},",
+				"          Active = InActiveFlag",
+				"     )) ~> sink1",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string,",
+				"          Active as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          EmpID = {Emp ID},",
+				"          NamePrefix = {Name Prefix},",
+				"          FirstName = {Name Prefix},",
+				"          MiddleInitial = {Middle Initial},",
+				"          LastName = {Last Name},",
+				"          Gender = split1@New@Gender,",
+				"          EMail = {E Mail},",
+				"          Active = ActiveFlag",
+				"     )) ~> sink2"
 			]
 		}
 	}
