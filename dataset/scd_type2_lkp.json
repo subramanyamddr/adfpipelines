@@ -1,0 +1,12 @@
+{
+	"name": "scd_type2_lkp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azsqldestination",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
