@@ -113,7 +113,7 @@
 				"     isNull({Emp ID}) && !isNull(EmpID),",
 				"     disjoint: false) ~> split2@(InsertNew, UpdateOldInDB, UpdateExistingFromSrc)",
 				"split2@InsertNew alterRow(insertIf(1==1)) ~> insertNew",
-				"split2@UpdateOldInDB alterRow(upsertIf(1==1)) ~> updateOldDB",
+				"split2@UpdateOldInDB alterRow(updateIf(1==1)) ~> updateOldDB",
 				"insertNew derive(insertNew = 1) ~> flagInsertNew",
 				"updateOldDB derive(updateOldFromDB = 0) ~> flagUpdateExisting",
 				"split2@UpdateExistingFromSrc alterRow(updateIf(1==1)) ~> updateExistingSrc",
