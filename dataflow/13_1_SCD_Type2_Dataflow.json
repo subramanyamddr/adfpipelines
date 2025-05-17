@@ -138,7 +138,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"flagUpdateExisting select(mapColumn(",
-				"          {Emp ID},",
+				"          {Emp ID} = EmpID,",
 				"          {Name Prefix},",
 				"          {First Name},",
 				"          {Middle Initial},",
