@@ -19,13 +19,62 @@
 					"name": "lkpscd2destinationTable"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "scd2sqldesttable",
+						"type": "DatasetReference"
+					},
+					"name": "insertNewSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "scd2sqldesttable",
+						"type": "DatasetReference"
+					},
+					"name": "updateExistngSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "scd2sqldesttable",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
 				},
 				{
-					"name": "alterRow1"
+					"name": "split2"
+				},
+				{
+					"name": "insertNew"
+				},
+				{
+					"name": "updateExisting"
+				},
+				{
+					"name": "flagInsertNew"
+				},
+				{
+					"name": "flagUpdateExisting"
+				},
+				{
+					"name": "updateOld"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "updateOlddervie"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -60,7 +109,158 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 alterRow() ~> alterRow1"
+				"join1 split(!isNull({Emp ID}) && isNull(EmpID),",
+				"     isNull({Emp ID}) && !isNull(EmpID),",
+				"     disjoint: false) ~> split2@(InsertNew, UpdateExisting, UpdateOld)",
+				"split2@InsertNew alterRow(insertIf(1==1)) ~> insertNew",
+				"split2@UpdateExisting alterRow(upsertIf(1==1)) ~> updateExisting",
+				"insertNew derive(insertNew = 1) ~> flagInsertNew",
+				"updateExisting derive(updateExisting = 1) ~> flagUpdateExisting",
+				"split2@UpdateOld alterRow(updateIf(1==1)) ~> updateOld",
+				"flagInsertNew select(mapColumn(",
+				"          {Emp ID},",
+				"          {Name Prefix},",
+				"          {First Name},",
+				"          {Middle Initial},",
+				"          {Last Name},",
+				"          Gender = split2@InsertNew@Gender,",
+				"          {E Mail},",
+				"          EmpID,",
+				"          NamePrefix,",
+				"          FirstName,",
+				"          MiddleInitial,",
+				"          LastName,",
+				"          Gender = split2@InsertNew@Gender,",
+				"          EMail,",
+				"          Active,",
+				"          insertNew",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"flagUpdateExisting select(mapColumn(",
+				"          {Emp ID},",
+				"          {Name Prefix},",
+				"          {First Name},",
+				"          {Middle Initial},",
+				"          {Last Name},",
+				"          Gender = split2@UpdateExisting@Gender,",
+				"          {E Mail},",
+				"          EmpID,",
+				"          NamePrefix,",
+				"          FirstName,",
+				"          MiddleInitial,",
+				"          LastName,",
+				"          Gender = split2@UpdateExisting@Gender,",
+				"          EMail,",
+				"          Active,",
+				"          updateExisting",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"updateOld derive(updateOldFLAG = 0) ~> updateOlddervie",
+				"updateOlddervie select(mapColumn(",
+				"          {Emp ID},",
+				"          {Name Prefix},",
+				"          {First Name},",
+				"          {Middle Initial},",
+				"          {Last Name},",
+				"          Gender = split2@UpdateOld@Gender,",
+				"          {E Mail},",
+				"          EmpID,",
+				"          NamePrefix,",
+				"          FirstName,",
+				"          MiddleInitial,",
+				"          LastName,",
+				"          Gender = split2@UpdateOld@Gender,",
+				"          EMail,",
+				"          Active,",
+				"          updateOldFLAG",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string,",
+				"          Active as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['EmpID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          EmpID = {Emp ID},",
+				"          NamePrefix = {Name Prefix},",
+				"          FirstName = {First Name},",
+				"          MiddleInitial = {Middle Initial},",
+				"          LastName = {Last Name},",
+				"          Gender,",
+				"          EMail = {E Mail},",
+				"          Active = insertNew",
+				"     )) ~> insertNewSink",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string,",
+				"          Active as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:['EmpID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          EmpID = {Emp ID},",
+				"          NamePrefix = {Name Prefix},",
+				"          FirstName = {First Name},",
+				"          MiddleInitial = {Middle Initial},",
+				"          LastName = {Last Name},",
+				"          Gender,",
+				"          EMail = {E Mail},",
+				"          Active = updateExisting",
+				"     )) ~> updateExistngSink",
+				"select3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string,",
+				"          Active as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:['Emp ID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
