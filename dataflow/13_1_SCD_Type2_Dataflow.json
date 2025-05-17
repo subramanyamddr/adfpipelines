@@ -53,7 +53,7 @@
 					"name": "insertNew"
 				},
 				{
-					"name": "updateExisting"
+					"name": "updateOldDB"
 				},
 				{
 					"name": "flagInsertNew"
@@ -62,7 +62,7 @@
 					"name": "flagUpdateExisting"
 				},
 				{
-					"name": "updateOld"
+					"name": "updateExistingSrc"
 				},
 				{
 					"name": "select1"
@@ -71,7 +71,7 @@
 					"name": "select2"
 				},
 				{
-					"name": "updateOlddervie"
+					"name": "updateExistingSrcflag"
 				},
 				{
 					"name": "select3"
@@ -111,12 +111,12 @@
 				"     broadcast: 'auto')~> join1",
 				"join1 split(!isNull({Emp ID}) && isNull(EmpID),",
 				"     isNull({Emp ID}) && !isNull(EmpID),",
-				"     disjoint: false) ~> split2@(InsertNew, UpdateExisting, UpdateOld)",
+				"     disjoint: false) ~> split2@(InsertNew, UpdateOldInDB, UpdateExistingFromSrc)",
 				"split2@InsertNew alterRow(insertIf(1==1)) ~> insertNew",
-				"split2@UpdateExisting alterRow(upsertIf(1==1)) ~> updateExisting",
+				"split2@UpdateOldInDB alterRow(upsertIf(1==1)) ~> updateOldDB",
 				"insertNew derive(insertNew = 1) ~> flagInsertNew",
-				"updateExisting derive(updateExisting = 1) ~> flagUpdateExisting",
-				"split2@UpdateOld alterRow(updateIf(1==1)) ~> updateOld",
+				"updateOldDB derive(updateOldFromDB = 0) ~> flagUpdateExisting",
+				"split2@UpdateExistingFromSrc alterRow(updateIf(1==1)) ~> updateExistingSrc",
 				"flagInsertNew select(mapColumn(",
 				"          {Emp ID},",
 				"          {Name Prefix},",
@@ -143,38 +143,38 @@
 				"          {First Name},",
 				"          {Middle Initial},",
 				"          {Last Name},",
-				"          Gender = split2@UpdateExisting@Gender,",
+				"          Gender = split2@UpdateOldInDB@Gender,",
 				"          {E Mail},",
 				"          EmpID,",
 				"          NamePrefix,",
 				"          FirstName,",
 				"          MiddleInitial,",
 				"          LastName,",
-				"          Gender = split2@UpdateExisting@Gender,",
+				"          Gender = split2@UpdateOldInDB@Gender,",
 				"          EMail,",
 				"          Active,",
-				"          updateExisting",
+				"          updateOldFromDB",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"updateOld derive(updateOldFLAG = 0) ~> updateOlddervie",
-				"updateOlddervie select(mapColumn(",
+				"updateExistingSrc derive(updateExistingFlag = 1) ~> updateExistingSrcflag",
+				"updateExistingSrcflag select(mapColumn(",
 				"          {Emp ID},",
 				"          {Name Prefix},",
 				"          {First Name},",
 				"          {Middle Initial},",
 				"          {Last Name},",
-				"          Gender = split2@UpdateOld@Gender,",
+				"          Gender = split2@UpdateExistingFromSrc@Gender,",
 				"          {E Mail},",
 				"          EmpID,",
 				"          NamePrefix,",
 				"          FirstName,",
 				"          MiddleInitial,",
 				"          LastName,",
-				"          Gender = split2@UpdateOld@Gender,",
+				"          Gender = split2@UpdateExistingFromSrc@Gender,",
 				"          EMail,",
 				"          Active,",
-				"          updateOldFLAG",
+				"          updateExistingFlag",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
@@ -193,21 +193,21 @@
 				"     deletable:false,",
 				"     insertable:false,",
 				"     updateable:true,",
-				"     upsertable:true,",
+				"     upsertable:false,",
 				"     keys:['EmpID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          EmpID = {Emp ID},",
-				"          NamePrefix = {Name Prefix},",
-				"          FirstName = {First Name},",
-				"          MiddleInitial = {Middle Initial},",
-				"          LastName = {Last Name},",
+				"          EmpID,",
+				"          NamePrefix,",
+				"          FirstName,",
+				"          MiddleInitial,",
+				"          LastName,",
 				"          Gender,",
-				"          EMail = {E Mail},",
-				"          Active = updateOldFLAG",
+				"          EMail,",
+				"          Active = updateExistingFlag",
 				"     )) ~> updateoldsink",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -254,7 +254,7 @@
 				"     deletable:false,",
 				"     insertable:false,",
 				"     updateable:true,",
-				"     upsertable:true,",
+				"     upsertable:false,",
 				"     keys:['EmpID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
@@ -268,7 +268,7 @@
 				"          LastName,",
 				"          Gender,",
 				"          EMail,",
-				"          Active = updateExisting",
+				"          Active = updateOldFromDB",
 				"     )) ~> sink1"
 			]
 		}
