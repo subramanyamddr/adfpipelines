@@ -7,6 +7,12 @@
 		},
 		"firststorageblob_connectionString": {
 			"value": ""
+		},
+		"azsqldestination_properties_typeProperties_server": {
+			"value": "azfirstsqlserver.database.windows.net"
+		},
+		"azsqldestination_properties_typeProperties_database": {
+			"value": "AzFirstSqlDatabase"
 		}
 	}
 }
