@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "exec sp",
-				"type": "SqlServerStoredProcedure",
+				"name": "Lookup1",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,20 +15,25 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[GetRowCountEmployeeData]",
-					"storedProcedureParameters": {
-						"TableName": {
-							"value": "dbo.SimpleEmployeeData",
-							"type": "String"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "azsqldestination",
-					"type": "LinkedServiceReference"
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "declare @rowcount int \nexec dbo.GetRowCountEmployeeData 'SimpleEmployeeData',@rowcount output\nselect @rowcount as RowCount1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "sqlTblDestination",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
+		"variables": {
+			"rowcount": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
