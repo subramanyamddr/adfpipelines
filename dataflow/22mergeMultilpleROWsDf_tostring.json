@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "mergeDestination",
+						"referenceName": "mergeDestination_string",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -44,7 +44,7 @@
 				"aggregate1 derive(Skillset = toString(Skillset)) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['merge_multipleRows_destination_string.csv'],",
+				"     partitionFileNames:['merge_destination_string.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
