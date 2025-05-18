@@ -1,0 +1,34 @@
+{
+	"name": "19_1execStoredProcedure_outputParam",
+	"properties": {
+		"activities": [
+			{
+				"name": "exec sp",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[GetRowCountEmployeeData]",
+					"storedProcedureParameters": {
+						"TableName": {
+							"value": "dbo.SimpleEmployeeData",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "azsqldestination",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
