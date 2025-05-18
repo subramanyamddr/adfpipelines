@@ -1,0 +1,16 @@
+{
+	"name": "blankSqlSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azsqldestination",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "testing"
+		}
+	}
+}
