@@ -83,7 +83,7 @@
 					},
 					"url": "https://prod-58.eastus.logic.azure.com:443/workflows/f99595bdcd8a4339800428a530aa6fd6/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=yzrTkA7TcwA4qckp8AwBSFeXc4ZRC6kfrr4FklICHoc",
 					"body": {
-						"value": "{\n    \"pipelineName\": @{pipeline().Pipeline},\n    \"DataFactoryName\": @{pipeline().DataFactory},\n    \"ErrorMessage\": @{activity('Copy data1').output.ErrorMessage},\n    \"RunId\": @{pipeline().RunId}\n}",
+						"value": "{\n    \"pipelineName\": @{pipeline().Pipeline},\n    \"DataFactoryName\": @{pipeline().DataFactory},\n    \"ErrorMessage\": @{activity('Copy fail activity').output.errors[0].Message},\n    \"RunId\": @{pipeline().RunId}\n}",
 						"type": "Expression"
 					}
 				}
