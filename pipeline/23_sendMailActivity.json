@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "Copy fail activity",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -62,7 +62,7 @@
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Copy data1",
+						"activity": "Copy fail activity",
 						"dependencyConditions": [
 							"Failed"
 						]
