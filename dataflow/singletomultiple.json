@@ -1,0 +1,59 @@
+{
+	"name": "singletomultiple",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "singltoMultiple",
+						"type": "DatasetReference"
+					},
+					"name": "srcInputstream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "firstdestination",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedcolumnwithsplitfunction"
+				},
+				{
+					"name": "flatten1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmployeeId as string,",
+				"          EmployeeName as string,",
+				"          Skillset as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcInputstream",
+				"srcInputstream derive(Skillset = split(Skillset, ',')) ~> derivedcolumnwithsplitfunction",
+				"derivedcolumnwithsplitfunction foldDown(unroll(Skillset),",
+				"     mapColumn(",
+				"          EmployeeId,",
+				"          EmployeeName,",
+				"          Skillset",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['splitSingletoMultiple.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
