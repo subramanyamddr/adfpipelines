@@ -38,13 +38,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "downloadZipfilessrc",
+						"referenceName": "Binary2",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Binary1",
+						"referenceName": "Binary3",
 						"type": "DatasetReference"
 					}
 				]
