@@ -13,6 +13,9 @@
 		},
 		"azsqldestination_properties_typeProperties_database": {
 			"value": "AzFirstSqlDatabase"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"value": "https://randomuser.me/api/?results=50&format=csv"
 		}
 	}
 }
