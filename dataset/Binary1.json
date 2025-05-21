@@ -1,22 +1,17 @@
 {
-	"name": "apiFileDownloadSink",
+	"name": "Binary1",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "destzipfilesdownloadapi",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "DelimitedText",
+		"type": "Binary",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"container": "destination"
-			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
-		},
-		"schema": []
+			}
+		}
 	}
 }
