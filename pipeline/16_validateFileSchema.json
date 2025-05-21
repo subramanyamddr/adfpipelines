@@ -1,0 +1,133 @@
+{
+	"name": "16_validateFileSchema",
+	"properties": {
+		"activities": [
+			{
+				"name": "srcFileSchema",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "srcFile",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"structure"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "refSchema",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "refSchema",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"structure"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "srcFileSchema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "refSchema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('refSchema').output.structure,activity('srcFileSchema').output.structure)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "falseSetVariable",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "NotEquals",
+								"value": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "truSetVarialble",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Equals",
+								"value": 1
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Equals": {
+				"type": "Integer",
+				"defaultValue": 0
+			},
+			"NotEquals": {
+				"type": "Integer",
+				"defaultValue": 0
+			}
+		},
+		"annotations": []
+	}
+}
