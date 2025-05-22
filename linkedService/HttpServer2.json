@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://github.com/jquery/jquery/archive/refs/heads/main.zip",
+			"url": "https://api.github.com/repos/octocat/Hello-World/zipball",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
