@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "apiFileDownloadSink.csv",
 				"container": "destination"
 			},
 			"columnDelimiter": ",",
