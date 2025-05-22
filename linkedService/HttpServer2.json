@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://people.sc.fsu.edu/~jburkardt/data/zip/example.zip",
+			"url": "https://file-examples.com/wp-content/storage/2017/02/zip_2MB.zip",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
