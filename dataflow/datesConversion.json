@@ -12,7 +12,15 @@
 					"name": "inputSource"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqldstTableCheck",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
@@ -43,7 +51,17 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: 'select * from [SalesLT].[Product]',",
 				"     format: 'query') ~> inputSource",
-				"inputSource derive(ConvertedcstTime = fromUTC(ModifiedDate,'GMT') - hours(4)) ~> derivedColumn1"
+				"inputSource derive(ConvertedcstTime = fromUTC(ModifiedDate,'GMT') - hours(4)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
