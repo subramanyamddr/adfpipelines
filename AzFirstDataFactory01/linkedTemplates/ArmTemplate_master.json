@@ -7,9 +7,21 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "AzFirstDataFactory01"
 		},
+		"destzipfilesdownloadapi_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'destzipfilesdownloadapi'"
+		},
 		"firststorageblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'firststorageblob'"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://randomuser.me/api/?results=50&format=csv"
+		},
+		"HttpServer2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://file-examples.com/wp-content/storage/2017/02/zip_2MB.zip"
 		},
 		"azsqldestination_properties_typeProperties_server": {
 			"type": "string",
@@ -18,10 +30,6 @@
 		"azsqldestination_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "AzFirstSqlDatabase"
-		},
-		"HttpServer1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://randomuser.me/api/?results=50&format=csv"
 		},
 		"containerUri": {
 			"type": "string",
@@ -50,17 +58,23 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"destzipfilesdownloadapi_connectionString": {
+						"value": "[parameters('destzipfilesdownloadapi_connectionString')]"
+					},
 					"firststorageblob_connectionString": {
 						"value": "[parameters('firststorageblob_connectionString')]"
+					},
+					"HttpServer1_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer1_properties_typeProperties_url')]"
+					},
+					"HttpServer2_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer2_properties_typeProperties_url')]"
 					},
 					"azsqldestination_properties_typeProperties_server": {
 						"value": "[parameters('azsqldestination_properties_typeProperties_server')]"
 					},
 					"azsqldestination_properties_typeProperties_database": {
 						"value": "[parameters('azsqldestination_properties_typeProperties_database')]"
-					},
-					"HttpServer1_properties_typeProperties_url": {
-						"value": "[parameters('HttpServer1_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -124,6 +138,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'AzFirstDataFactory01_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "AzFirstDataFactory01_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'AzFirstDataFactory01_ArmTemplate_3')]"
 			]
 		}
 	]
