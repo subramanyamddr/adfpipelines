@@ -1,0 +1,36 @@
+{
+	"name": "32_runPipelinedemoWithParam",
+	"properties": {
+		"activities": [
+			{
+				"name": "set FinalName",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "finalName",
+					"value": {
+						"value": "@concat(pipeline().parameters.inputName,':',' finalName')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"inputName": {
+				"type": "string",
+				"defaultValue": "'test'"
+			}
+		},
+		"variables": {
+			"finalName": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
