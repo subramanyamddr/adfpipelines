@@ -1,0 +1,12 @@
+{
+	"name": "DatesSqlSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azsqldestination",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
