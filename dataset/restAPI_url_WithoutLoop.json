@@ -1,0 +1,15 @@
+{
+	"name": "restAPI_url_WithoutLoop",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "?offset=0&limit=20"
+		},
+		"schema": []
+	}
+}
