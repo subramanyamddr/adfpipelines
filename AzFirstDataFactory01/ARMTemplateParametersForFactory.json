@@ -31,6 +31,9 @@
 		},
 		"restaPIcall_properties_typeProperties_url": {
 			"value": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20"
+		},
+		"RestService3_properties_typeProperties_url": {
+			"value": "https://pokeapi.co/api/v2/pokemon/"
 		}
 	}
 }
