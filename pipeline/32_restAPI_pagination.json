@@ -71,7 +71,29 @@
 										"fileExtension": ".txt"
 									}
 								},
-								"enableStaging": false
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['results'][0]['name']"
+											},
+											"sink": {
+												"name": "name"
+											}
+										},
+										{
+											"source": {
+												"path": "$['results'][0]['url']"
+											},
+											"sink": {
+												"name": "url"
+											}
+										}
+									],
+									"collectionReference": "$['results']"
+								}
 							},
 							"inputs": [
 								{

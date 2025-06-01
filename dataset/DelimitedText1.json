@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@concat('restapi','_','output_','1')",
+					"value": "@concat('restapi','_','output_',string(item()))",
 					"type": "Expression"
 				},
 				"container": "destination"
