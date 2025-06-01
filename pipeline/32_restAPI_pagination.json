@@ -77,7 +77,7 @@
 									"mappings": [
 										{
 											"source": {
-												"path": "$['results'][0]['name']"
+												"path": "['name']"
 											},
 											"sink": {
 												"name": "name"
@@ -85,19 +85,20 @@
 										},
 										{
 											"source": {
-												"path": "$['results'][0]['url']"
+												"path": "['url']"
 											},
 											"sink": {
 												"name": "url"
 											}
 										}
 									],
-									"collectionReference": "$['results']"
+									"collectionReference": "$['results']",
+									"mapComplexValuesToString": false
 								}
 							},
 							"inputs": [
 								{
-									"referenceName": "RestResource1",
+									"referenceName": "RestResource2",
 									"type": "DatasetReference"
 								}
 							],
