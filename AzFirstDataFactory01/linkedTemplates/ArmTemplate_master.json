@@ -23,6 +23,14 @@
 			"type": "string",
 			"defaultValue": "https://file-examples.com/wp-content/storage/2017/02/zip_2MB.zip"
 		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{concat('https://pokeapi.co/api/v2/pokemon/?limit=20','&offset=',mul(item(),20))}"
+		},
+		"RestService2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://pokeapi.co/api/v2/pokemon/?limit=20&offset=0"
+		},
 		"azsqldestination_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "azfirstsqlserver.database.windows.net"
@@ -30,6 +38,10 @@
 		"azsqldestination_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "AzFirstSqlDatabase"
+		},
+		"restaPIcall_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20"
 		},
 		"containerUri": {
 			"type": "string",
@@ -70,11 +82,20 @@
 					"HttpServer2_properties_typeProperties_url": {
 						"value": "[parameters('HttpServer2_properties_typeProperties_url')]"
 					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
+					},
+					"RestService2_properties_typeProperties_url": {
+						"value": "[parameters('RestService2_properties_typeProperties_url')]"
+					},
 					"azsqldestination_properties_typeProperties_server": {
 						"value": "[parameters('azsqldestination_properties_typeProperties_server')]"
 					},
 					"azsqldestination_properties_typeProperties_database": {
 						"value": "[parameters('azsqldestination_properties_typeProperties_database')]"
+					},
+					"restaPIcall_properties_typeProperties_url": {
+						"value": "[parameters('restaPIcall_properties_typeProperties_url')]"
 					}
 				}
 			},
