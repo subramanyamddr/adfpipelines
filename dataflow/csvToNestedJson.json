@@ -31,10 +31,10 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          custId as string,",
+				"          custId as short,",
 				"          custName as string,",
 				"          itemName as string,",
-				"          qty as string",
+				"          qty as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
