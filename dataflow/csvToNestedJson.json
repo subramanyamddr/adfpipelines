@@ -49,6 +49,11 @@
 				"     partitionFileNames:['csvJson.json'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          custId,",
+				"          custName,",
+				"          Purchases",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
