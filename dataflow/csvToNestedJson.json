@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "csvJsonSink",
+						"referenceName": "jsonoutputfromcsv",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -46,7 +46,10 @@
 				"     Purchases = collect(Purchases)) ~> aggregate1",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['csvJson.json'],",
+				"     partitionFileNames:['csvtoJsonLatest.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
