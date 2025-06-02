@@ -23,6 +23,9 @@
 		"RestService2_properties_typeProperties_url": {
 			"value": "https://pokeapi.co/api/v2/pokemon/?limit=20&offset=0"
 		},
+		"RestService3_properties_typeProperties_url": {
+			"value": "https://pokeapi.co/api/v2/pokemon/"
+		},
 		"azsqldestination_properties_typeProperties_server": {
 			"value": "azfirstsqlserver.database.windows.net"
 		},
@@ -31,9 +34,6 @@
 		},
 		"restaPIcall_properties_typeProperties_url": {
 			"value": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20"
-		},
-		"RestService3_properties_typeProperties_url": {
-			"value": "https://pokeapi.co/api/v2/pokemon/"
 		},
 		"containerUri": {
 			"value": ""

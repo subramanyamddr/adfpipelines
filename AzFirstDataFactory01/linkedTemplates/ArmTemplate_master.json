@@ -31,6 +31,10 @@
 			"type": "string",
 			"defaultValue": "https://pokeapi.co/api/v2/pokemon/?limit=20&offset=0"
 		},
+		"RestService3_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://pokeapi.co/api/v2/pokemon/"
+		},
 		"azsqldestination_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "azfirstsqlserver.database.windows.net"
@@ -42,10 +46,6 @@
 		"restaPIcall_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20"
-		},
-		"RestService3_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://pokeapi.co/api/v2/pokemon/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -92,6 +92,9 @@
 					"RestService2_properties_typeProperties_url": {
 						"value": "[parameters('RestService2_properties_typeProperties_url')]"
 					},
+					"RestService3_properties_typeProperties_url": {
+						"value": "[parameters('RestService3_properties_typeProperties_url')]"
+					},
 					"azsqldestination_properties_typeProperties_server": {
 						"value": "[parameters('azsqldestination_properties_typeProperties_server')]"
 					},
@@ -100,9 +103,6 @@
 					},
 					"restaPIcall_properties_typeProperties_url": {
 						"value": "[parameters('restaPIcall_properties_typeProperties_url')]"
-					},
-					"RestService3_properties_typeProperties_url": {
-						"value": "[parameters('RestService3_properties_typeProperties_url')]"
 					}
 				}
 			},
