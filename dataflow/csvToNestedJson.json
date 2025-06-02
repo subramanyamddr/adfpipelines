@@ -1,0 +1,56 @@
+{
+	"name": "csvToNestedJson",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "scrInputFile",
+						"type": "DatasetReference"
+					},
+					"name": "srcFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "csvJsonSink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          custId as string,",
+				"          custName as string,",
+				"          itemName as string,",
+				"          qty as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcFile",
+				"srcFile derive(Purchases = @(itemName=itemName,",
+				"          qty=qty)) ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(custId,",
+				"          custName),",
+				"     Purchases = collect(Purchases)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['csvJson.json'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
