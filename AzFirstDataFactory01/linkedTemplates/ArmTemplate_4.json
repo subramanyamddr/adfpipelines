@@ -13,6 +13,463 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/11_1_SCD_Type1_Dataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "srcInputEmployeeFile",
+								"type": "DatasetReference"
+							},
+							"name": "srcEmployeeInputFile"
+						},
+						{
+							"dataset": {
+								"referenceName": "sqlTblDestination",
+								"type": "DatasetReference"
+							},
+							"name": "lkpEmployeeTable"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "azIncrementalLoadDestination",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Emp ID} as integer,",
+						"          {Name Prefix} as string,",
+						"          {First Name} as string,",
+						"          {Middle Initial} as string,",
+						"          {Last Name} as string,",
+						"          Gender as string,",
+						"          {E Mail} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> srcEmployeeInputFile",
+						"source(output(",
+						"          EmpID as integer,",
+						"          NamePrefix as string,",
+						"          FirstName as string,",
+						"          MiddleInitial as string,",
+						"          LastName as string,",
+						"          Gender as string,",
+						"          EMail as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> lkpEmployeeTable",
+						"srcEmployeeInputFile, lkpEmployeeTable join({Emp ID} == EmpID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 alterRow(insertIf(isNull(EmpID)),",
+						"     updateIf(!isNull(EmpID))) ~> alterRow1",
+						"alterRow1 select(mapColumn(",
+						"          {Emp ID},",
+						"          {Name Prefix},",
+						"          {First Name},",
+						"          {Middle Initial},",
+						"          {Last Name},",
+						"          Gender = srcEmployeeInputFile@Gender,",
+						"          {E Mail}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EmpID as integer,",
+						"          NamePrefix as string,",
+						"          FirstName as string,",
+						"          MiddleInitial as string,",
+						"          LastName as string,",
+						"          Gender as string,",
+						"          EMail as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:true,",
+						"     upsertable:true,",
+						"     keys:['EmpID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmpID = {Emp ID},",
+						"          NamePrefix = {Name Prefix},",
+						"          FirstName = {First Name},",
+						"          MiddleInitial = {Middle Initial},",
+						"          LastName = {Last Name},",
+						"          Gender,",
+						"          EMail = {E Mail}",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/13_1_SCD_Type2_Dataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "scd2_srcInputFile",
+								"type": "DatasetReference"
+							},
+							"name": "scd2inputsrcfile"
+						},
+						{
+							"dataset": {
+								"referenceName": "scd2sqldesttable",
+								"type": "DatasetReference"
+							},
+							"name": "lkpscd2destinationTable"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "scd2sqldesttable",
+								"type": "DatasetReference"
+							},
+							"name": "updateoldsink"
+						},
+						{
+							"dataset": {
+								"referenceName": "scd2sqldesttable",
+								"type": "DatasetReference"
+							},
+							"name": "insertnewsink"
+						},
+						{
+							"dataset": {
+								"referenceName": "scd2_type1_sql_db",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "split2"
+						},
+						{
+							"name": "insertNew"
+						},
+						{
+							"name": "updateOldDB"
+						},
+						{
+							"name": "flagInsertNew"
+						},
+						{
+							"name": "flagUpdateExisting"
+						},
+						{
+							"name": "updateExistingSrc"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "updateExistingSrcflag"
+						},
+						{
+							"name": "select3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Emp ID} as integer,",
+						"          {Name Prefix} as string,",
+						"          {First Name} as string,",
+						"          {Middle Initial} as string,",
+						"          {Last Name} as string,",
+						"          Gender as string,",
+						"          {E Mail} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> scd2inputsrcfile",
+						"source(output(",
+						"          EmpID as integer,",
+						"          NamePrefix as string,",
+						"          FirstName as string,",
+						"          MiddleInitial as string,",
+						"          LastName as string,",
+						"          Gender as string,",
+						"          EMail as string,",
+						"          Active as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> lkpscd2destinationTable",
+						"scd2inputsrcfile, lkpscd2destinationTable join({Emp ID} == EmpID,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 split(!isNull({Emp ID}) && isNull(EmpID),",
+						"     isNull({Emp ID}) && !isNull(EmpID),",
+						"     disjoint: false) ~> split2@(InsertNew, UpdateOldInDB, UpdateExistingFromSrc)",
+						"split2@InsertNew alterRow(insertIf(1==1)) ~> insertNew",
+						"split2@UpdateOldInDB alterRow(updateIf(1==1)) ~> updateOldDB",
+						"insertNew derive(insertNew = 1) ~> flagInsertNew",
+						"updateOldDB derive(updateOldFromDB = 0) ~> flagUpdateExisting",
+						"split2@UpdateExistingFromSrc alterRow(updateIf(1==1)) ~> updateExistingSrc",
+						"flagInsertNew select(mapColumn(",
+						"          {Emp ID},",
+						"          {Name Prefix},",
+						"          {First Name},",
+						"          {Middle Initial},",
+						"          {Last Name},",
+						"          Gender = split2@InsertNew@Gender,",
+						"          {E Mail},",
+						"          EmpID,",
+						"          NamePrefix,",
+						"          FirstName,",
+						"          MiddleInitial,",
+						"          LastName,",
+						"          Gender = split2@InsertNew@Gender,",
+						"          EMail,",
+						"          Active,",
+						"          insertNew",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"flagUpdateExisting select(mapColumn(",
+						"          {Emp ID} = EmpID,",
+						"          {Name Prefix},",
+						"          {First Name},",
+						"          {Middle Initial},",
+						"          {Last Name},",
+						"          Gender = split2@UpdateOldInDB@Gender,",
+						"          {E Mail},",
+						"          EmpID,",
+						"          NamePrefix,",
+						"          FirstName,",
+						"          MiddleInitial,",
+						"          LastName,",
+						"          Gender = split2@UpdateOldInDB@Gender,",
+						"          EMail,",
+						"          Active,",
+						"          updateOldFromDB",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"updateExistingSrc derive(updateExistingFlag = 1) ~> updateExistingSrcflag",
+						"updateExistingSrcflag select(mapColumn(",
+						"          {Emp ID},",
+						"          {Name Prefix},",
+						"          {First Name},",
+						"          {Middle Initial},",
+						"          {Last Name},",
+						"          Gender = split2@UpdateExistingFromSrc@Gender,",
+						"          {E Mail},",
+						"          EmpID,",
+						"          NamePrefix,",
+						"          FirstName,",
+						"          MiddleInitial,",
+						"          LastName,",
+						"          Gender = split2@UpdateExistingFromSrc@Gender,",
+						"          EMail,",
+						"          Active,",
+						"          updateExistingFlag",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"select3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EmpID as integer,",
+						"          NamePrefix as string,",
+						"          FirstName as string,",
+						"          MiddleInitial as string,",
+						"          LastName as string,",
+						"          Gender as string,",
+						"          EMail as string,",
+						"          Active as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['EmpID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmpID,",
+						"          NamePrefix,",
+						"          FirstName,",
+						"          MiddleInitial,",
+						"          LastName,",
+						"          Gender,",
+						"          EMail,",
+						"          Active = updateExistingFlag",
+						"     )) ~> updateoldsink",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EmpID as integer,",
+						"          NamePrefix as string,",
+						"          FirstName as string,",
+						"          MiddleInitial as string,",
+						"          LastName as string,",
+						"          Gender as string,",
+						"          EMail as string,",
+						"          Active as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmpID = {Emp ID},",
+						"          NamePrefix = {Name Prefix},",
+						"          FirstName = {First Name},",
+						"          MiddleInitial = {Middle Initial},",
+						"          LastName = {Last Name},",
+						"          Gender,",
+						"          EMail = {E Mail},",
+						"          Active = insertNew",
+						"     )) ~> insertnewsink",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EmpID as integer,",
+						"          NamePrefix as string,",
+						"          FirstName as string,",
+						"          MiddleInitial as string,",
+						"          LastName as string,",
+						"          Gender as string,",
+						"          EMail as string,",
+						"          Active as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['EmpID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmpID = {Emp ID},",
+						"          NamePrefix,",
+						"          FirstName,",
+						"          MiddleInitial,",
+						"          LastName,",
+						"          Gender,",
+						"          EMail,",
+						"          Active = updateOldFromDB",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/22mergeMultilpleROWsDf_tostring')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "srcmultiplerows",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "mergeDestination_string",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmployeeId as string,",
+						"          EmployeeName as string,",
+						"          Skillset as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 aggregate(groupBy(EmployeeId,",
+						"          EmployeeName),",
+						"     Skillset = collect(Skillset)) ~> aggregate1",
+						"aggregate1 derive(Skillset = toString(Skillset)) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['merge_destination_string.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DeleteDuplicateRowsDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -516,43 +973,91 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/36_execSqlQuery')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/39_cdc_dataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "update [dbo].[SimpleEmployeeData]\nset firstName = 'Pavan' \nwhere EmpID = 1 \n\nselect * from [dbo].[SimpleEmployeeData]",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
 							"dataset": {
-								"referenceName": "AzureSqlTable1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"referenceName": "srcInputFile",
+								"type": "DatasetReference"
 							},
-							"firstRowOnly": false
+							"name": "fileCustomer"
+						},
+						{
+							"dataset": {
+								"referenceName": "dbCustomerPurchases",
+								"type": "DatasetReference"
+							},
+							"name": "tblCustomer"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dbCustomerPurchases",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "hashfilePurchases"
+						},
+						{
+							"name": "hashdbPurchases"
+						},
+						{
+							"name": "exists1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          custId as integer,",
+						"          custName as string,",
+						"          itemName as string,",
+						"          qty as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> fileCustomer",
+						"source(output(",
+						"          custId as integer,",
+						"          custName as string,",
+						"          itemName as string,",
+						"          qty as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> tblCustomer",
+						"fileCustomer derive(hashfilePurchases = sha2(256, columns())) ~> hashfilePurchases",
+						"tblCustomer derive(hashdbPurchases = sha2(256, columns())) ~> hashdbPurchases",
+						"hashfilePurchases, hashdbPurchases exists(hashfilePurchases == hashdbPurchases,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> exists1",
+						"exists1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          custId as integer,",
+						"          custName as string,",
+						"          itemName as string,",
+						"          qty as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
 			},
 			"dependsOn": []
 		},
@@ -852,7 +1357,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/11_1_SCD_Type1_Dataflow')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/13SCDType2')]",
@@ -899,7 +1406,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/13_1_SCD_Type2_Dataflow')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/22_1_mergeMultipleRows_tostring')]",
@@ -943,7 +1452,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/22mergeMultilpleROWsDf_tostring')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/22_mergeMultipleRows')]",
@@ -989,144 +1500,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/mergeMultilpleROWsDf')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/24_splitSingletoMultiple')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "singletomultiple",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"srcInputstream": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/singletomultiple')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/28_datesConversionDFExectioon')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "datesConversion",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "datesConversion",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"inputSource": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/datesConversion')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/33_csvtoNestedJson')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "csvToNestedJson",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "csvToNestedJson",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"srcFile": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/csvToNestedJson')]"
 			]
 		}
 	]
