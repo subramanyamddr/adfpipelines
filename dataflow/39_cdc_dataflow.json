@@ -1,0 +1,86 @@
+{
+	"name": "39_cdc_dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcInputFile",
+						"type": "DatasetReference"
+					},
+					"name": "fileCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "dbCustomerPurchases",
+						"type": "DatasetReference"
+					},
+					"name": "tblCustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dbCustomerPurchases",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "hashfilePurchases"
+				},
+				{
+					"name": "hashdbPurchases"
+				},
+				{
+					"name": "exists1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          custId as integer,",
+				"          custName as string,",
+				"          itemName as string,",
+				"          qty as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> fileCustomer",
+				"source(output(",
+				"          custId as integer,",
+				"          custName as string,",
+				"          itemName as string,",
+				"          qty as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> tblCustomer",
+				"fileCustomer derive(hashfilePurchases = sha2(256, columns())) ~> hashfilePurchases",
+				"tblCustomer derive(hashdbPurchases = sha2(256, columns())) ~> hashdbPurchases",
+				"hashfilePurchases, hashdbPurchases exists(hashfilePurchases == hashdbPurchases,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists1",
+				"exists1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          custId as integer,",
+				"          custName as string,",
+				"          itemName as string,",
+				"          qty as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

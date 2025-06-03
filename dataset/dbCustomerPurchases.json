@@ -1,0 +1,35 @@
+{
+	"name": "dbCustomerPurchases",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azsqldestination",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "custId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "custName",
+				"type": "varchar"
+			},
+			{
+				"name": "itemName",
+				"type": "varchar"
+			},
+			{
+				"name": "qty",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "customerPurchases"
+		}
+	}
+}
