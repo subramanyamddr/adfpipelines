@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "AzFirstDataFactory01"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
 		"destzipfilesdownloadapi_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'destzipfilesdownloadapi'"
@@ -14,6 +18,10 @@
 		"firststorageblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'firststorageblob'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azfirststorageaccount01.dfs.core.windows.net/"
 		},
 		"HttpServer1_properties_typeProperties_url": {
 			"type": "string",
@@ -2669,6 +2677,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/33_csvtoNestedJson')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "csvToNestedJson",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "csvToNestedJson",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcFile": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/csvToNestedJson')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3134,6 +3188,33 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/csvJsonSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "destination"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/downloadAPI_src')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3377,6 +3458,29 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/firststorageblob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/jsonoutputfromcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "destination"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
 			]
 		},
 		{
@@ -3984,6 +4088,51 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/scrInputFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "firststorageblob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "cutomerPurchases.csv",
+						"container": "source"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "custId",
+						"type": "String"
+					},
+					{
+						"name": "custName",
+						"type": "String"
+					},
+					{
+						"name": "itemName",
+						"type": "String"
+					},
+					{
+						"name": "qty",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/firststorageblob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/singltoMultiple')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4324,6 +4473,23 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/firststorageblob')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/HttpServer1')]",
@@ -4984,6 +5150,76 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/csvToNestedJson')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "scrInputFile",
+								"type": "DatasetReference"
+							},
+							"name": "srcFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "jsonoutputfromcsv",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          custId as short,",
+						"          custName as string,",
+						"          itemName as string,",
+						"          qty as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> srcFile",
+						"srcFile derive(Purchases = @(itemName=itemName,",
+						"          qty=qty)) ~> derivedColumn1",
+						"derivedColumn1 aggregate(groupBy(custId,",
+						"          custName),",
+						"     Purchases = collect(Purchases)) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['csvtoJsonLatest.json'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          custId,",
+						"          custName,",
+						"          Purchases",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/scrInputFile')]",
+				"[concat(variables('factoryId'), '/datasets/jsonoutputfromcsv')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/datesConversion')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -5384,14 +5620,14 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/33_csvtoNestedJson')]",
+			"name": "[concat(parameters('factoryName'), '/36_execSqlQuery')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "csvToNestedJson",
-						"type": "ExecuteDataFlow",
+						"name": "Lookup1",
+						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -5402,21 +5638,18 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "csvToNestedJson",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"srcFile": {},
-									"sink1": {}
-								}
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "update [dbo].[SimpleEmployeeData]\nset firstName = 'Pavan' \nwhere EmpID = 1 \n\nselect * from [dbo].[SimpleEmployeeData]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
 							},
-							"traceLevel": "Fine"
+							"firstRowOnly": false
 						}
 					}
 				],
@@ -5426,141 +5659,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/csvToNestedJson')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/csvToNestedJson')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "scrInputFile",
-								"type": "DatasetReference"
-							},
-							"name": "srcFile"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "csvJsonSink",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "aggregate1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          custId as string,",
-						"          custName as string,",
-						"          itemName as string,",
-						"          qty as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> srcFile",
-						"srcFile derive(Purchases = @(itemName=itemName,",
-						"          qty=qty)) ~> derivedColumn1",
-						"derivedColumn1 aggregate(groupBy(custId,",
-						"          custName),",
-						"     Purchases = collect(Purchases)) ~> aggregate1",
-						"aggregate1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['csvJson.json'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/scrInputFile')]",
-				"[concat(variables('factoryId'), '/datasets/csvJsonSink')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/scrInputFile')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "firststorageblob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "cutomerPurchases.csv",
-						"container": "source"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "custId",
-						"type": "String"
-					},
-					{
-						"name": "custName",
-						"type": "String"
-					},
-					{
-						"name": "itemName",
-						"type": "String"
-					},
-					{
-						"name": "qty",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/firststorageblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/csvJsonSink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "firststorageblob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "destination"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/firststorageblob')]"
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]"
 			]
 		}
 	]

@@ -5,11 +5,17 @@
 		"factoryName": {
 			"value": "AzFirstDataFactory01"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
 		"destzipfilesdownloadapi_connectionString": {
 			"value": ""
 		},
 		"firststorageblob_connectionString": {
 			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://azfirststorageaccount01.dfs.core.windows.net/"
 		},
 		"HttpServer1_properties_typeProperties_url": {
 			"value": "https://randomuser.me/api/?results=50&format=csv"
