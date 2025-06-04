@@ -84,7 +84,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@not(contains(activity('get src metadata').output.childItems,activity('get dst metadata').output.childItems))",
+						"value": "@not(contains(activity('get dst metadata').output.childItems, item()))",
 						"type": "Expression"
 					}
 				}
