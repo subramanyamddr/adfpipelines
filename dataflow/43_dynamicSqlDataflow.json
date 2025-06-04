@@ -1,0 +1,35 @@
+{
+	"name": "43_dynamicSqlDataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as integer,",
+				"          NamePrefix as string,",
+				"          FirstName as string,",
+				"          MiddleInitial as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          EMail as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: (\"select * from [SalesLT].[Customer] where ModifiedDate = \\'2006-08-01\\'\"),",
+				"     format: 'query') ~> source1"
+			]
+		}
+	}
+}
