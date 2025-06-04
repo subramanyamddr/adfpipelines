@@ -73,7 +73,13 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "43_dynamicSqlDataflow",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"modDateDFparam": {
+								"value": "'@{variables('ModifiedDateParam')}'",
+								"type": "Expression"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
