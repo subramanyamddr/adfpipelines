@@ -46,7 +46,7 @@
 				"typeProperties": {
 					"variableName": "ModifiedDateParam",
 					"value": {
-						"value": "@activity('Lookup1').output.firstRow.ModifiedDate",
+						"value": "\\'@{activity('Lookup1').output.firstRow.ModifiedDate}\\'",
 						"type": "Expression"
 					}
 				}
