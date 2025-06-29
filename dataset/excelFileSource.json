@@ -1,0 +1,28 @@
+{
+	"name": "excelFileSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sheetIndex": {
+				"type": "int"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "ExcelWithMultipleSheets.xlsx",
+				"fileSystem": "source"
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheetIndex",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
