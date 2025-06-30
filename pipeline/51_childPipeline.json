@@ -1,0 +1,35 @@
+{
+	"name": "51_childPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ChildOutput",
+					"value": {
+						"value": "@pipeline().parameters.color",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"color": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"ChildOutput": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
