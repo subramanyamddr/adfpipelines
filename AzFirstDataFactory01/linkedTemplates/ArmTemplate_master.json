@@ -221,6 +221,26 @@
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'AzFirstDataFactory01_ArmTemplate_4')]"
 			]
+		},
+		{
+			"name": "AzFirstDataFactory01_ArmTemplate_6",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_6.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'AzFirstDataFactory01_ArmTemplate_5')]"
+			]
 		}
 	]
 }
