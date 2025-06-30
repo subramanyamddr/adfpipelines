@@ -1,0 +1,53 @@
+{
+	"name": "50_loopArrayVariables",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('ArrayVar')",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "output",
+								"value": {
+									"value": "@item()",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"ArrayVar": {
+				"type": "Array",
+				"defaultValue": [
+					"car",
+					"bike",
+					"lorry"
+				]
+			},
+			"output": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
