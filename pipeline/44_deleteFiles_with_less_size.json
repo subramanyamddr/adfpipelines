@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "sinkallfilesdestination",
+						"referenceName": "sinkallFiles_without_Param",
 						"type": "DatasetReference"
 					},
 					"fieldList": [
@@ -28,7 +28,7 @@
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
+						"type": "BinaryReadSettings"
 					}
 				}
 			},

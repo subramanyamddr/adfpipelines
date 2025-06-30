@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "sinkallfilesdestination",
+						"referenceName": "sinkAllFilesWithoutParam",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
