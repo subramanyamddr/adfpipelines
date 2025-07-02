@@ -1,0 +1,56 @@
+{
+	"name": "47_exec_dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "salesDataCSV",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "firstdestination",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Region as string,",
+				"          Country as string,",
+				"          {Item Type} as string,",
+				"          {Sales Channel} as string,",
+				"          {Order Priority} as string,",
+				"          {Order Date} as string,",
+				"          {Order ID} as string,",
+				"          {Ship Date} as string,",
+				"          {Units Sold} as string,",
+				"          {Unit Price} as string,",
+				"          {Unit Cost} as string,",
+				"          {Total Revenue} as string,",
+				"          {Total Cost} as string,",
+				"          {Total Profit} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('key',",
+				"          0,",
+				"          Region",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
