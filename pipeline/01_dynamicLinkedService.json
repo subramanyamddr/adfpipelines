@@ -17,13 +17,16 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from [SalesLT].[Address]",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "LS_DynamicQuery",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"server": "test",
+							"db": "test"
+						}
 					}
 				}
 			}
