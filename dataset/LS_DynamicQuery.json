@@ -17,12 +17,10 @@
 		},
 		"parameters": {
 			"server": {
-				"type": "string",
-				"defaultValue": "azfirstsqlserver.database.windows.net"
+				"type": "string"
 			},
 			"db": {
-				"type": "string",
-				"defaultValue": "AzFirstSqlDatabase"
+				"type": "string"
 			}
 		},
 		"annotations": [],
