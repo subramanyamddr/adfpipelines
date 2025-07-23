@@ -4,11 +4,11 @@
 		"parameters": {
 			"ServerName": {
 				"type": "string",
-				"defaultValue": "azfirstsqlserver.database.windows.net"
+				"defaultValue": "test"
 			},
 			"DBName": {
 				"type": "string",
-				"defaultValue": "AzFirstSqlDatabase"
+				"defaultValue": "test"
 			}
 		},
 		"annotations": [],
