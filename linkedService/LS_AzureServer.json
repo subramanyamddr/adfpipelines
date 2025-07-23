@@ -1,11 +1,21 @@
 {
 	"name": "LS_AzureServer",
 	"properties": {
+		"parameters": {
+			"ServerName": {
+				"type": "string",
+				"defaultValue": "azfirstsqlserver.database.windows.net"
+			},
+			"DBName": {
+				"type": "string",
+				"defaultValue": "AzFirstSqlDatabase"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
-			"server": "azfirstsqlserver.database.windows.net",
-			"database": "AzFirstSqlDatabase",
+			"server": "@{linkedService().ServerName}",
+			"database": "@{linkedService().DBName}",
 			"encrypt": "mandatory",
 			"trustServerCertificate": false,
 			"authenticationType": "SystemAssignedManagedIdentity"
