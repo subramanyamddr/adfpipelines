@@ -1,0 +1,32 @@
+{
+	"name": "LS_DynamicQuery",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureServer",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ServerName": {
+					"value": "@dataset().server",
+					"type": "Expression"
+				},
+				"DBName": {
+					"value": "@dataset().db",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"server": {
+				"type": "string",
+				"defaultValue": "azfirstsqlserver.database.windows.net"
+			},
+			"db": {
+				"type": "string",
+				"defaultValue": "AzFirstSqlDatabase"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
