@@ -25,8 +25,8 @@
 						"referenceName": "LS_DynamicQuery",
 						"type": "DatasetReference",
 						"parameters": {
-							"server": "azfirstsqlserver.database.windows.net",
-							"db": "AzFirstSqlDatabase"
+							"server": "azsecondsqlserver.database.windows.net",
+							"db": "AzSecondSqlDatabase"
 						}
 					}
 				}
